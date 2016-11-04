@@ -125,6 +125,7 @@ compute_chunk(struct mandelbrot_param *args)
 void
 init_round(struct mandelbrot_thread *args)
 {
+	printf("Running thread %d <\n", args->id);
 	// Initialize or reinitialize here variables before any thread starts or restarts computation
 	// Every thread run this function; feel free to allow only one of them to do anything
 }
@@ -141,10 +142,10 @@ parallel_mandelbrot(struct mandelbrot_thread *args, struct mandelbrot_param *par
 	// Only thread of ID 0 compute the whole picture
 	int id = args->id;
 	
-	parameters->begin_h = id * (parameters->height / NB_THREADS );
+	parameters->begin_h = id   * (parameters->height / NB_THREADS );
 	parameters->end_h = (id+1) * (parameters->height / NB_THREADS );
-	parameters->begin_w = id * (parameters->width / NB_THREADS );
-	parameters->end_w = (id+1) * (parameters->width / NB_THREADS );
+	parameters->begin_w = 0;
+	parameters->end_w = parameters->width;
 
 	compute_chunk(parameters);
 

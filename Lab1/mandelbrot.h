@@ -22,7 +22,7 @@
  */
 
 #include "ppm.h"
-
+#include <time.h>
 #ifndef MANDELBROT_H_
 #define MANDELBROT_H_
 
