@@ -36,6 +36,7 @@ struct mandelbrot_timing timing;
 
 int thread_stop;
 pthread_barrier_t thread_pool_barrier;
+pthread_mutex_t mutex;
 
 pthread_t thread[NB_THREADS];
 struct mandelbrot_thread thread_data[NB_THREADS];
@@ -120,6 +121,8 @@ compute_chunk(struct mandelbrot_param *args)
 	}
 }
 
+int counter = 0;
+
 /***** You may modify this portion *****/
 #if NB_THREADS > 0
 void
@@ -176,19 +179,32 @@ parallel_mandelbrot(struct mandelbrot_thread *args, struct mandelbrot_param *par
 #if LOADBALANCE == 2
 	// *optional* replace this code with another load-balancing solution.
 	// Only thread of ID 0 compute the whole picture
-	if(args->id == 0)
-	{
-		// Define the region compute_chunk() has to compute
-		// Entire height: from 0 to picture's height
-		parameters->begin_h = 0;
-		parameters->end_h = parameters->height;
-		// Entire width: from 0 to picture's width
-		parameters->begin_w = 0;
-		parameters->end_w = parameters->width;
+	int x_block = 5;
+	int y_block = 5;
+	int total_blocks = x_block*y_block;
 
-		// Go
+	pthread_mutex_lock( &mutex );
+	int i = counter++;
+	pthread_mutex_unlock( &mutex );
+
+
+	while (i < total_blocks){
+
+		int chunk_x = i%x_block;
+		int chunk_y = i/y_block;
+		
+		parameters->begin_h = (chunk_y * (parameters->height))/y_block;
+		parameters->end_h = ((chunk_y+1) * (parameters->height))/y_block;
+		parameters->begin_w = (chunk_x * (parameters->width))/x_block;
+		parameters->end_w = ((chunk_x+1) * (parameters->width))/x_block;
+
 		compute_chunk(parameters);
+
+		pthread_mutex_lock( &mutex );
+		i = counter++;
+		pthread_mutex_unlock( &mutex );
 	}
+	
 #endif
 }
 /***** end *****/
@@ -312,6 +328,7 @@ update_colors(struct mandelbrot_param* param)
 void
 init_mandelbrot(struct mandelbrot_param *param)
 {
+	pthread_mutex_init( &mutex, NULL );
 	// Initialize the picture container, but not its buffer
 	param->picture = ppm_alloc(0, 0);
 	param->picture->height = param->height;
