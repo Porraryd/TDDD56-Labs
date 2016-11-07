@@ -155,8 +155,8 @@ parallel_mandelbrot(struct mandelbrot_thread *args, struct mandelbrot_param *par
 // Compiled only if LOADBALANCE = 1
 #if LOADBALANCE == 1
 
-	int x_block = 5;
-	int y_block = 5;
+	int x_block = 15;
+	int y_block = 15;
 	int total_blocks = x_block*y_block;
 
 
@@ -179,8 +179,8 @@ parallel_mandelbrot(struct mandelbrot_thread *args, struct mandelbrot_param *par
 #if LOADBALANCE == 2
 	// *optional* replace this code with another load-balancing solution.
 	// Only thread of ID 0 compute the whole picture
-	int x_block = 5;
-	int y_block = 5;
+	int x_block = 15;
+	int y_block = 15;
 	int total_blocks = x_block*y_block;
 
 	pthread_mutex_lock( &mutex );
