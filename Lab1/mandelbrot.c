@@ -125,7 +125,6 @@ compute_chunk(struct mandelbrot_param *args)
 void
 init_round(struct mandelbrot_thread *args)
 {
-	printf("Running thread %d <\n", args->id);
 	// Initialize or reinitialize here variables before any thread starts or restarts computation
 	// Every thread run this function; feel free to allow only one of them to do anything
 }
@@ -152,21 +151,26 @@ parallel_mandelbrot(struct mandelbrot_thread *args, struct mandelbrot_param *par
 #endif
 // Compiled only if LOADBALANCE = 1
 #if LOADBALANCE == 1
-	// Replace this code with your load-balanced smarter solution.
-	// Only thread of ID 0 compute the whole picture
-	if(args->id == 0)
-	{
-		// Define the region compute_chunk() has to compute
-		// Entire height: from 0 to picture's height
-		parameters->begin_h = 0;
-		parameters->end_h = parameters->height;
-		// Entire width: from 0 to picture's width
-		parameters->begin_w = 0;
-		parameters->end_w = parameters->width;
 
-		// Go
-		compute_chunk(parameters);
+	int x_block = 5;
+	int y_block = 5;
+	int total_blocks = x_block*y_block;
+
+
+	for (int i=args->id; i < total_blocks; i+=NB_THREADS) {
+		
+		int chunk_x = i%x_block;
+		int chunk_y = i/y_block;
+		
+		parameters->begin_h = (chunk_y * (parameters->height))/y_block;
+		parameters->end_h = ((chunk_y+1) * (parameters->height))/y_block;
+		parameters->begin_w = (chunk_x * (parameters->width))/x_block;
+		parameters->end_w = ((chunk_x+1) * (parameters->width))/x_block;
+
+		compute_chunk(parameters);	
 	}
+		
+	
 #endif
 // Compiled only if LOADBALANCE = 2
 #if LOADBALANCE == 2
