@@ -48,7 +48,7 @@ typedef int data_t;
 #define DATA_SIZE sizeof(data_t)
 #define DATA_VALUE 5
 
-stack_t *stack;
+stack_tt *stack;
 data_t data;
 
 #if MEASURE != 0
@@ -109,7 +109,7 @@ test_setup()
   data = DATA_VALUE;
 
   // Allocate a new stack and reset its values
-  stack = malloc(sizeof(stack_t));
+  stack = malloc(sizeof(stack_tt));
 
   // Reset explicitely all members to a well-known initial value
   // For instance (to be deleted as your stack design progresses):
