@@ -46,7 +46,7 @@
 #endif
 
 void
-stack_check(stack_t *stack)
+stack_check(stack_tt *stack)
 {
 // Do not perform any sanity check if performance is bein measured
 #if MEASURE == 0
@@ -60,10 +60,14 @@ stack_check(stack_t *stack)
 }
 
 int /* Return the type you prefer */
-stack_push(/* Make your own signature */)
+stack_push(stack_tt *stack, struct node* itemToPush)
 {
 #if NON_BLOCKING == 0
   // Implement a lock_based stack
+  pthread_mutax_lock(&stack->lock);
+    itemToPush->next = stack->head;
+    stack->head = itemToPush;
+  pthread_mutax_unlock(&stack->lock);
 #elif NON_BLOCKING == 1
   // Implement a harware CAS-based stack
 #else
@@ -74,13 +78,13 @@ stack_push(/* Make your own signature */)
   // Debug practice: you can check if this operation results in a stack in a consistent check
   // It doesn't harm performance as sanity check are disabled at measurement time
   // This is to be updated as your implementation progresses
-  stack_check((stack_t*)1);
+  stack_check((stack_tt*)1);
 
   return 0;
 }
 
 int /* Return the type you prefer */
-stack_pop(/* Make your own signature */)
+stack_pop(stack_tt *stack)
 {
 #if NON_BLOCKING == 0
   // Implement a lock_based stack
