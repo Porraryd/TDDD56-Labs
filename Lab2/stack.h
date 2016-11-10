@@ -27,20 +27,25 @@
 #ifndef STACK_H
 #define STACK_H
 
+struct node {
+	int val;
+	struct node* next;
+};
 struct stack
 {
-  // This is a fake structure; change it to your needs
-  int change_this_member;
+  struct node* head;
+  pthread_mutex_t lock;
+
 };
-typedef struct stack stack_t;
+typedef struct stack stack_tt;
 
 // Pushes an element in a thread-safe manner
 int /* Return the type you prefer */
-stack_push(/* Make your own signature */);
+stack_push(stack_tt *stack, struct node* itemToPush);
 
 // Pops an element in a thread-safe manner
 int /* Return the type you prefer */
-stack_pop(/* Make your own signature */);
+stack_pop(stack_tt *stack);
 
 
 
@@ -61,6 +66,6 @@ stack_pop(/* Make your own signature */);
 
 // Debug practice: function that can check anytime is a stack is in a legal state using assert() internally
 void
-stack_check(stack_t *stack);
+stack_check(stack_tt *stack);
 
 #endif /* STACK_H */
