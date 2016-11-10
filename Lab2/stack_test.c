@@ -113,7 +113,8 @@ test_setup()
 
   // Reset explicitely all members to a well-known initial value
   // For instance (to be deleted as your stack design progresses):
-  stack->change_this_member = 0;
+  stack->head = NULL;
+  stack->count = 0;
 }
 
 void
@@ -121,6 +122,7 @@ test_teardown()
 {
   // Do not forget to free your stacks after each test
   // to avoid memory leaks
+  stack_free(stack);
   free(stack);
 }
 
@@ -128,6 +130,7 @@ void
 test_finalize()
 {
   // Destroy properly your test batch
+  
 }
 
 int
@@ -137,26 +140,35 @@ test_push_safe()
   // several threads push concurrently to it
 
   // Do some work
-  stack_push(/* add relevant arguments here */);
+  int count_before = stack->count;
+  stack_push(stack, 3);
 
   // check if the stack is in a consistent state
   stack_check(stack);
 
   // check other properties expected after a push operation
   // (this is to be updated as your stack design progresses)
-  assert(stack->change_this_member == 0);
+  assert( (stack->count - count_before) == 1);
 
   // For now, this test always fails
-  return 0;
+  return 1;
 }
 
 int
 test_pop_safe()
 {
   // Same as the test above for parallel pop operation
+  int count_before = stack->count;
+  int val = stack_pop(stack);
 
+  // check if the stack is in a consistent state
+  stack_check(stack);
+
+  // check other properties expected after a push operation
+  // (this is to be updated as your stack design progresses)
+  assert( stack->count - count_before == -1);
   // For now, this test always fails
-  return 0;
+  return 1;
 }
 
 // 3 Threads should be enough to raise and detect the ABA problem

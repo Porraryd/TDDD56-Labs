@@ -31,9 +31,12 @@ struct node {
 	int val;
 	struct node* next;
 };
+typedef struct node node_t;
+
 struct stack
 {
   struct node* head;
+  int count;
   pthread_mutex_t lock;
 
 };
@@ -41,13 +44,14 @@ typedef struct stack stack_tt;
 
 // Pushes an element in a thread-safe manner
 int /* Return the type you prefer */
-stack_push(stack_tt *stack, struct node* itemToPush);
+stack_push(stack_tt *stack, int value);
 
 // Pops an element in a thread-safe manner
 int /* Return the type you prefer */
 stack_pop(stack_tt *stack);
 
-
+void
+stack_free(stack_tt *stack);
 
 /* Debug practice: check the boolean expression expr; if it computes to 0, print a warning message on standard error and exit */
 

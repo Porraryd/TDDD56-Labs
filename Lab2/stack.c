@@ -52,7 +52,7 @@ stack_check(stack_tt *stack)
 #if MEASURE == 0
 	// Use assert() to check if your stack is in a state that makes sens
 	// This test should always pass 
-	assert(1 == 1);
+	assert(stack->head == NULL && stack->count != 0);
 
 	// This test fails if the task is not allocated or if the allocation failed
 	assert(stack != NULL);
@@ -60,14 +60,17 @@ stack_check(stack_tt *stack)
 }
 
 int /* Return the type you prefer */
-stack_push(stack_tt *stack, struct node* itemToPush)
+stack_push(stack_tt *stack, int value)
 {
 #if NON_BLOCKING == 0
   // Implement a lock_based stack
-  pthread_mutax_lock(&stack->lock);
+  node_t* itemToPush = malloc(sizeof(node_t));
     itemToPush->next = stack->head;
+    itemToPush->val; 
+  pthread_mutex_lock(&stack->lock);
     stack->head = itemToPush;
-  pthread_mutax_unlock(&stack->lock);
+    stack->count++;
+  pthread_mutex_unlock(&stack->lock);
 #elif NON_BLOCKING == 1
   // Implement a harware CAS-based stack
 #else
@@ -88,6 +91,18 @@ stack_pop(stack_tt *stack)
 {
 #if NON_BLOCKING == 0
   // Implement a lock_based stack
+  int val;  
+  node_t* nodeToPop = NULL;
+  pthread_mutex_lock(&stack->lock);
+  if(stack->head){
+    nodeToPop = stack->head;
+    val = nodeToPop->val;
+    stack->head = nodeToPop->next;
+    free(nodeToPop);
+  }else{
+    return NULL; 
+  }
+  pthread_mutex_unlock(&stack->lock);
 #elif NON_BLOCKING == 1
   // Implement a harware CAS-based stack
 #else
@@ -96,5 +111,16 @@ stack_pop(stack_tt *stack)
 #endif
 
   return 0;
+}
+
+void stack_free(stack_tt *stack){
+
+  node_t* curNode = stack->head;
+  node_t* lastNode;
+  while(curNode){
+    lastNode = curNode;
+    curNode = lastNode->next;
+    free(lastNode);
+  }
 }
 
