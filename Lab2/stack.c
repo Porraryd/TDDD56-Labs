@@ -5,20 +5,20 @@
  *  Copyright 2011 Nicolas Melot
  *
  * This file is part of TDDD56.
- * 
+ *
  *     TDDD56 is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *     TDDD56 is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU General Public License
  *     along with TDDD56. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 #ifndef DEBUG
@@ -51,7 +51,7 @@ stack_check(stack_tt *stack)
 // Do not perform any sanity check if performance is bein measured
 #if MEASURE == 0
 	// Use assert() to check if your stack is in a state that makes sens
-	// This test should always pass 
+	// This test should always pass
 	assert(stack->head == NULL && stack->count != 0);
 
 	// This test fails if the task is not allocated or if the allocation failed
@@ -59,27 +59,25 @@ stack_check(stack_tt *stack)
 #endif
 }
 
-int /* Return the type you prefer */
-stack_push(stack_tt *stack, int value)
+void /* Return the type you prefer */
+stack_push(stack_tt *stack, node_t* nodeToPush)
 {
 #if NON_BLOCKING == 0
   // Implement a lock_based stack
-  node_t* itemToPush = malloc(sizeof(node_t));
-    itemToPush->next = stack->head;
-    itemToPush->val; 
+
   pthread_mutex_lock(&stack->lock);
-    stack->head = itemToPush;
-    stack->count++;
+		nodeToPush->next = stack->head;
+    stack->head = nodeToPush;
   pthread_mutex_unlock(&stack->lock);
 #elif NON_BLOCKING == 1
-  node_t* itemToPush = malloc(sizeof(node_t));
-    itemToPush->next = stack->head;
-    itemToPush->val; 
+	node_t* old;
+	do {
+		old = stack->head;
+		nodeToPush->next = old;
+	} while(cas(((size_t*)&(stack->head)), ((size_t)(old)), ((size_t)nodeToPush)) != (size_t)old);
 
-  cas(((size_t*)&(stack->head)), ((size_t*)&(stack->head)), ((size_t*)&itemToPush));
-   // stack->head = itemToPush;
 
-  //cas(*(stack->count), *(stack->count), *(stack->count+1));
+	//cas((size_t*)&(stack->count), (size_t)(stack->count), (size_t)(stack->count+1));
 
 #else
   /*** Optional ***/
@@ -91,28 +89,45 @@ stack_push(stack_tt *stack, int value)
   // This is to be updated as your implementation progresses
   stack_check((stack_tt*)1);
 
-  return 0;
 }
 
 int /* Return the type you prefer */
 stack_pop(stack_tt *stack)
 {
+
+
 #if NON_BLOCKING == 0
   // Implement a lock_based stack
-  int val;  
-  node_t* nodeToPop = NULL;
-  pthread_mutex_lock(&stack->lock);
+	node_t* nodeToPop = NULL;
+	int val;
+	pthread_mutex_lock(&stack->lock);
   if(stack->head){
+
     nodeToPop = stack->head;
     val = nodeToPop->val;
     stack->head = nodeToPop->next;
-    free(nodeToPop);
   }else{
-    return NULL; 
+		val = 0;
   }
-  pthread_mutex_unlock(&stack->lock);
+	pthread_mutex_unlock(&stack->lock);
+	free(nodeToPop);
+	return val;
 #elif NON_BLOCKING == 1
-  // Implement a harware CAS-based stack
+	node_t* old;
+	node_t* newHead;
+	do {
+		if(stack->head) {
+			old = stack->head;
+			newHead = stack->head->next;
+		}
+		else {
+			return 0;
+		}
+	} while(cas(((size_t*)&(stack->head)), ((size_t)(old)), ((size_t)newHead)) != (size_t)old);
+
+	return old->val;
+
+
 #else
   /*** Optional ***/
   // Implement a software CAS-based stack
@@ -131,4 +146,3 @@ void stack_free(stack_tt *stack){
     free(lastNode);
   }
 }
-

@@ -5,20 +5,20 @@
  *  Copyright 2011 Nicolas Melot
  *
  * This file is part of TDDD56.
- * 
+ *
  *     TDDD56 is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *     TDDD56 is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU General Public License
  *     along with TDDD56. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -70,7 +70,7 @@ stack_measure_pop(void* arg)
     clock_gettime(CLOCK_MONOTONIC, &t_start[args->id]);
     for (i = 0; i < MAX_PUSH_POP / NB_THREADS; i++)
       {
-        // See how fast your implementation can pop MAX_PUSH_POP elements in parallel
+        stack_pop(stack);
       }
     clock_gettime(CLOCK_MONOTONIC, &t_stop[args->id]);
 
@@ -82,11 +82,19 @@ stack_measure_push(void* arg)
 {
   stack_measure_arg_t *args = (stack_measure_arg_t*) arg;
   int i;
+  int j;
+  node_t *nodeToPush[MAX_PUSH_POP];
+
+  for(j = 0; j < MAX_PUSH_POP; j++) {
+    nodeToPush[j] = malloc(sizeof(node_t));
+    nodeToPush[j]->val = j+1;
+nodeToPush[j]->next = NULL;
+  }
 
   clock_gettime(CLOCK_MONOTONIC, &t_start[args->id]);
   for (i = 0; i < MAX_PUSH_POP / NB_THREADS; i++)
     {
-        // See how fast your implementation can push MAX_PUSH_POP elements in parallel
+      stack_push(stack, nodeToPush[i]);
     }
   clock_gettime(CLOCK_MONOTONIC, &t_stop[args->id]);
 
@@ -110,11 +118,21 @@ test_setup()
 
   // Allocate a new stack and reset its values
   stack = malloc(sizeof(stack_tt));
-
+  stack->head = malloc(sizeof(node_t));
   // Reset explicitely all members to a well-known initial value
   // For instance (to be deleted as your stack design progresses):
-  stack->head = NULL;
-  stack->count = 0;
+  #if MEASURE == 2
+  int i;
+
+  for (i = 0; i < MAX_PUSH_POP; i++){
+    node_t* pushNode = malloc(sizeof(node_t));
+    pushNode->next = NULL;
+    pushNode->val = i+1;
+    stack_push(stack, pushNode);
+  }
+  #else
+
+  #endif
 }
 
 void
@@ -130,7 +148,7 @@ void
 test_finalize()
 {
   // Destroy properly your test batch
-  
+
 }
 
 int
@@ -141,7 +159,7 @@ test_push_safe()
 
   // Do some work
   int count_before = stack->count;
-  stack_push(stack, 3);
+  //stack_push(stack, 3);
 
   // check if the stack is in a consistent state
   stack_check(stack);
@@ -159,6 +177,7 @@ test_pop_safe()
 {
   // Same as the test above for parallel pop operation
   int count_before = stack->count;
+  int val_before = stack->head ? stack->head->val : 0;
   int val = stack_pop(stack);
 
   // check if the stack is in a consistent state
@@ -166,6 +185,7 @@ test_pop_safe()
 
   // check other properties expected after a push operation
   // (this is to be updated as your stack design progresses)
+  assert(val == val_before);
   assert( stack->count - count_before == -1);
   // For now, this test always fails
   return 1;
@@ -238,7 +258,7 @@ test_cas()
 
   counter = 0;
   pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE); 
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   pthread_mutexattr_init(&mutex_attr);
   pthread_mutex_init(&lock, &mutex_attr);
 
