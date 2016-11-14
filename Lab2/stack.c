@@ -72,7 +72,15 @@ stack_push(stack_tt *stack, int value)
     stack->count++;
   pthread_mutex_unlock(&stack->lock);
 #elif NON_BLOCKING == 1
-  // Implement a harware CAS-based stack
+  node_t* itemToPush = malloc(sizeof(node_t));
+    itemToPush->next = stack->head;
+    itemToPush->val; 
+
+  cas(((size_t*)&(stack->head)), ((size_t*)&(stack->head)), ((size_t*)&itemToPush));
+   // stack->head = itemToPush;
+
+  //cas(*(stack->count), *(stack->count), *(stack->count+1));
+
 #else
   /*** Optional ***/
   // Implement a software CAS-based stack
