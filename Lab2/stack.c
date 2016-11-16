@@ -95,34 +95,27 @@ int /* Return the type you prefer */
 stack_pop(stack_tt *stack)
 {
 
+  if(stack->head == NULL)
+    return -1;
 
 #if NON_BLOCKING == 0
   // Implement a lock_based stack
 	node_t* nodeToPop = NULL;
 	int val;
 	pthread_mutex_lock(&stack->lock);
-  if(stack->head){
 
     nodeToPop = stack->head;
     val = nodeToPop->val;
     stack->head = nodeToPop->next;
-  }else{
-		val = 0;
-  }
+
 	pthread_mutex_unlock(&stack->lock);
-	free(nodeToPop);
 	return val;
 #elif NON_BLOCKING == 1
 	node_t* old;
 	node_t* newHead;
 	do {
-		if(stack->head) {
 			old = stack->head;
 			newHead = stack->head->next;
-		}
-		else {
-			return 0;
-		}
 	} while(cas(((size_t*)&(stack->head)), ((size_t)(old)), ((size_t)newHead)) != (size_t)old);
 
 	return old->val;
