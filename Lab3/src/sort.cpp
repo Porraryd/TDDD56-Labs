@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "sort.h"
+	#include <pthread.h>
 
 // These can be handy to debug your code through printf. Compile with CONFIG=DEBUG flags and spread debug(var)
 // through your code to display values that may understand better why your code may not work. There are variants
@@ -67,20 +68,122 @@ cxx_sort(int *array, size_t size)
 	std::sort(cppArray.begin(), cppArray.end());
 }
 
+
+struct quicksort_params {
+	size_t size;
+	int* array;
+	int depth;
+};
+
+typedef struct quicksort_params qs_param_t;
+
+static
+int
+pick_pivot(int* array, int size){
+	if (size < 3)
+		return 0;
+	int mid = size/2;
+	if (array[size-1] < array[0]){
+		std::swap(array[0], array[size-1]);
+	}
+	if (array[mid] < array[0]){
+		std::swap(array[mid], array[0]);
+	}
+	if (array[size-1] < array[mid])
+		std::swap(array[mid], array[size-1]);
+
+	return mid;
+}
+
 // A very simple quicksort implementation
 // * Recursion until array size is 1
 // * Bad pivot picking
 // * Not in place
 static
-void
-simple_quicksort(int *array, size_t size)
+void*
+simple_quicksort(void* args)
 {
 	int pivot, pivot_count, i;
 	int *left, *right;
 	size_t left_size = 0, right_size = 0;
 
+		qs_param_t* params = (qs_param_t*)args;
+	int size = params->size;
+	int* array = params->array;
 	pivot_count = 0;
 
+	// This is a bad threshold. Better have a higher value
+	// And use a non-recursive sort, such as insert sort
+	// then tune the threshold value
+	if(size > 1)
+	{
+		pivot = array[pick_pivot(array, size)];
+
+		left = (int*)malloc(size * sizeof(int));
+		right = (int*)malloc(size * sizeof(int));
+
+		// Split
+		for(i = 0; i < size; i++)
+		{
+			if(array[i] < pivot)
+			{
+				left[left_size] = array[i];
+				left_size++;
+			}
+			else if(array[i] > pivot)
+			{
+				right[right_size] = array[i];
+				right_size++;
+			}
+			else
+			{
+				pivot_count++;
+			}
+		}
+		qs_param_t* left_p = (qs_param_t*)malloc(sizeof(qs_param_t));
+		qs_param_t* right_p =  (qs_param_t*)malloc(sizeof(qs_param_t));
+		left_p->size = left_size;
+		right_p->size = right_size;
+
+		left_p->array = left;
+		right_p->array = right;
+
+		simple_quicksort(left_p);
+		simple_quicksort(right_p);
+
+		// Merge
+		memcpy(array, left, left_size * sizeof(int));
+		for(i = left_size; i < left_size + pivot_count; i++)
+		{
+			array[i] = pivot;
+		}
+		memcpy(array + left_size + pivot_count, right, right_size * sizeof(int));
+
+		// Free
+		free(left);
+		free(right);
+	}
+	else
+	{
+		// Do nothing
+	}
+}
+
+
+
+static
+void*
+parallel_quicksort(void* args)
+{
+	int pivot, pivot_count, i;
+	int *left, *right;
+	size_t left_size = 0, right_size = 0;
+
+	qs_param_t* params = (qs_param_t*)args;
+	pivot_count = 0;
+
+	int size = params->size;
+	int* array = params->array;
 	// This is a bad threshold. Better have a higher value
 	// And use a non-recursive sort, such as insert sort
 	// then tune the threshold value
@@ -89,8 +192,8 @@ simple_quicksort(int *array, size_t size)
 		// Bad, bad way to pick a pivot
 		// Better take a sample and pick
 		// it median value.
-		pivot = array[size / 2];
-		
+		pivot = array[pick_pivot(array, size)];
+
 		left = (int*)malloc(size * sizeof(int));
 		right = (int*)malloc(size * sizeof(int));
 
@@ -113,9 +216,29 @@ simple_quicksort(int *array, size_t size)
 			}
 		}
 
-		// Recurse		
-		simple_quicksort(left, left_size);
-		simple_quicksort(right, right_size);
+		qs_param_t* left_p = (qs_param_t*)malloc(sizeof(qs_param_t));
+		qs_param_t* right_p =  (qs_param_t*)malloc(sizeof(qs_param_t));
+		left_p->size = left_size;
+		right_p->size = right_size;
+
+		left_p->array = left;
+		right_p->array = right;
+		left_p->depth = params->depth + 1;
+		right_p->depth = params->depth + 1;
+
+		pthread_t thread1, thread2;
+		if(left_p->depth > 3){
+			simple_quicksort((void*)left_p);
+			simple_quicksort((void*)right_p);
+		}else{
+			printf("Launching new thread at depth %d \n", left_p->depth);
+			pthread_create(&thread1, NULL, parallel_quicksort, (void*)left_p);
+			parallel_quicksort((void*)right_p);
+		}
+
+
+		pthread_join( thread1, NULL);
+
 
 		// Merge
 		memcpy(array, left, left_size * sizeof(int));
@@ -128,12 +251,15 @@ simple_quicksort(int *array, size_t size)
 		// Free
 		free(left);
 		free(right);
+		free(left_p);
+		free(right_p);
 	}
 	else
 	{
 		// Do nothing
 	}
 }
+
 
 // This is used as sequential sort in the pipelined sort implementation with drake (see merge.c)
 // to sort initial input data chunks before streaming merge operations.
@@ -152,7 +278,7 @@ sort(int* array, size_t size)
 
 
 	// This is to make the base skeleton to work. Replace it with your own implementation
-	simple_quicksort(array, size);
+
 
 
 
@@ -163,12 +289,17 @@ sort(int* array, size_t size)
 	// routines (qsort, std::sort, std::merge, etc). It's more interesting to learn by writing it yourself.
 
 
-
+	qs_param_t* params =  (qs_param_t*)malloc(sizeof(qs_param_t));
+	params->size = size;
+	params->array = array;
+	params->depth = 1;
 	// Reproduce this structure here and there in your code to compile sequential or parallel versions of your code.
 #if NB_THREADS == 0
+	simple_quicksort(params);
 	// Some sequential-specific sorting code
 #else
+parallel_quicksort(params);
+
 	// Some parallel sorting-related code
 #endif // #if NB_THREADS
 }
-

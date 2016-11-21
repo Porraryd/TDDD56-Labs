@@ -11,7 +11,7 @@
 #include "sort.h"
 #include "utils.h"
 
-// Filename of file containing the data to sort 
+// Filename of file containing the data to sort
 static char *input_filename;
 
 // These can be handy to debug your code through printf. Compile with CONFIG=DEBUG flags and spread debug(var)
@@ -121,7 +121,42 @@ drake_run(task_t *task)
 
 
 	// Merge as much as you can here
+		debug_int(parent_size);
+	while(left_consumed < left_size && right_consumed < right_size){
+		debug_int(left[left_consumed]);
+		debug_int(right[right_consumed]);
+		if (parent_pushed > parent_size-1){
+			break;
+		}
+		if(left[left_consumed] < right[right_consumed]) {
+			parent[parent_pushed] = left[left_consumed];
+			left_consumed++;
+			parent_pushed++;
+		}
+		else {
+			parent[parent_pushed] = right[right_consumed];
+			left_consumed++;
+			parent_pushed++;
+		}
 
+	}
+
+	while(left_consumed < left_size){
+		if (parent_pushed > parent_size-1){
+			break;
+		}
+		parent[parent_pushed] = left[left_consumed];
+		left_consumed++;
+		parent_pushed++;
+	}
+	while(right_consumed < right_size){
+		if (parent_pushed > parent_size-1){
+			break;
+		}
+		parent[parent_pushed] = right[right_consumed];
+		left_consumed++;
+		parent_pushed++;
+	}
 
 	// Don't forget, the task may receive more data from its left or right child, unless the left or right child terminated.
 	// You will need to know the state of a task with
@@ -134,7 +169,7 @@ drake_run(task_t *task)
 	// This returns 0 is more data can be accessible in later iterations, 1 if no more input can be expected from the task or if the task
 	// will not receive any more input from any of its input channels.
 
-	
+
 	// Write the number of element you consumed from left child and right child into left_consumed and right_consumed, respectively
 	// and the total number of elements you pushed toward parent in parent_pushed
 
@@ -152,6 +187,9 @@ drake_run(task_t *task)
 	// check drake_task_is_depleted(task_tp t)
 	//
 	// That returns 1 if all predecessors of task t are killed and all input buffers are empty, or if task t is killed and 0 otherwise.
+	if(drake_task_depleted(task))
+		return 1;
+
 	return 0;
 }
 
