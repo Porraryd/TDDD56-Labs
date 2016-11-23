@@ -95,6 +95,24 @@ pick_pivot(int* array, int size){
 	return mid;
 }
 
+static
+void
+insertion_sort(int* array, int count){
+	int i, j, tmp;
+
+	for (i= 0; i < count; i++){
+		j = i;
+
+		while (j > 0 && array[j] < array[j-1]){
+			tmp = array[j];
+			array[j] = array[j-1];
+			array[j-1] = tmp;
+			j--;
+		}
+	}
+}
+
+
 // A very simple quicksort implementation
 // * Recursion until array size is 1
 // * Bad pivot picking
@@ -115,7 +133,7 @@ simple_quicksort(void* args)
 	// This is a bad threshold. Better have a higher value
 	// And use a non-recursive sort, such as insert sort
 	// then tune the threshold value
-	if(size > 1)
+	if(size > 5000)
 	{
 		pivot = array[pick_pivot(array, size)];
 
@@ -165,12 +183,9 @@ simple_quicksort(void* args)
 	}
 	else
 	{
-		// Do nothing
+		insertion_sort(array,size);
 	}
 }
-
-
-
 static
 void*
 parallel_quicksort(void* args)
@@ -187,7 +202,7 @@ parallel_quicksort(void* args)
 	// This is a bad threshold. Better have a higher value
 	// And use a non-recursive sort, such as insert sort
 	// then tune the threshold value
-	if(size > 1)
+	if(size > 5000)
 	{
 		// Bad, bad way to pick a pivot
 		// Better take a sample and pick
@@ -227,17 +242,44 @@ parallel_quicksort(void* args)
 		right_p->depth = params->depth + 1;
 
 		pthread_t thread1, thread2;
-		if(left_p->depth > 3){
+
+		#if NB_THREADS == 2
+
+		if (params->depth == 1){
+			pthread_create(&thread1, NULL, parallel_quicksort, (void*)left_p);
+			parallel_quicksort((void*)right_p);
+		}else{
+			simple_quicksort((void*)left_p);
+			simple_quicksort((void*)right_p);
+		}
+		pthread_join( thread1, NULL);
+
+		#elif NB_THREADS == 3
+		if(params->depth > 2){
 			simple_quicksort((void*)left_p);
 			simple_quicksort((void*)right_p);
 		}else{
-			printf("Launching new thread at depth %d \n", left_p->depth);
 			pthread_create(&thread1, NULL, parallel_quicksort, (void*)left_p);
 			parallel_quicksort((void*)right_p);
 		}
 
+		pthread_join( thread1, NULL);
+
+		#elif NB_THREADS == 4
+		if (params->depth == 2){
+			pthread_create(&thread1, NULL, parallel_quicksort, (void*)left_p);
+			parallel_quicksort((void*)right_p);
+		}else{
+			simple_quicksort((void*)left_p);
+			simple_quicksort((void*)right_p);
+		}
 
 		pthread_join( thread1, NULL);
+		#endif
+
+
+
+
 
 
 		// Merge
@@ -256,7 +298,7 @@ parallel_quicksort(void* args)
 	}
 	else
 	{
-		// Do nothing
+		insertion_sort(array, size);
 	}
 }
 
@@ -294,11 +336,11 @@ sort(int* array, size_t size)
 	params->array = array;
 	params->depth = 1;
 	// Reproduce this structure here and there in your code to compile sequential or parallel versions of your code.
-#if NB_THREADS == 0
+#if NB_THREADS < 2
 	simple_quicksort(params);
 	// Some sequential-specific sorting code
 #else
-parallel_quicksort(params);
+	parallel_quicksort(params);
 
 	// Some parallel sorting-related code
 #endif // #if NB_THREADS

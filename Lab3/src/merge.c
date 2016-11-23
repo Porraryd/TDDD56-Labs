@@ -122,9 +122,9 @@ drake_run(task_t *task)
 
 	// Merge as much as you can here
 		debug_int(parent_size);
+		debug_int(left_size);
+		debug_int(right_size);
 	while(left_consumed < left_size && right_consumed < right_size){
-		debug_int(left[left_consumed]);
-		debug_int(right[right_consumed]);
 		if (parent_pushed > parent_size-1){
 			break;
 		}
@@ -135,29 +135,39 @@ drake_run(task_t *task)
 		}
 		else {
 			parent[parent_pushed] = right[right_consumed];
+			right_consumed++;
+			parent_pushed++;
+		}
+
+	}
+	debug_int(left_consumed);
+	debug_int(right_consumed);
+/*
+
+*/
+	if (drake_task_killed(left_link->prod)){
+
+		while(right_consumed < right_size){
+			if (parent_pushed > parent_size-1){
+			break;
+			}
+			parent[parent_pushed] = right[right_consumed];
+			right_consumed++;
+			parent_pushed++;
+		}
+	}
+
+	if (drake_task_killed(right_link->prod)){
+		while(left_consumed < left_size){
+			if (parent_pushed > parent_size-1){
+				break;
+			}
+			parent[parent_pushed] = left[left_consumed];
 			left_consumed++;
 			parent_pushed++;
 		}
 
 	}
-
-	while(left_consumed < left_size){
-		if (parent_pushed > parent_size-1){
-			break;
-		}
-		parent[parent_pushed] = left[left_consumed];
-		left_consumed++;
-		parent_pushed++;
-	}
-	while(right_consumed < right_size){
-		if (parent_pushed > parent_size-1){
-			break;
-		}
-		parent[parent_pushed] = right[right_consumed];
-		left_consumed++;
-		parent_pushed++;
-	}
-
 	// Don't forget, the task may receive more data from its left or right child, unless the left or right child terminated.
 	// You will need to know the state of a task with
 	//
@@ -173,6 +183,7 @@ drake_run(task_t *task)
 	// Write the number of element you consumed from left child and right child into left_consumed and right_consumed, respectively
 	// and the total number of elements you pushed toward parent in parent_pushed
 
+		debug_int(parent_pushed);
 
 	// Now discarding input consumed and pushed output produced through channels and using the number of elements consumed and produced
 	// that you set above.
