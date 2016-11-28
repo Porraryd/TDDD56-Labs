@@ -10,4 +10,3 @@ void sort(int* array, size_t size);
 #ifdef __cplusplus
 }
 #endif
-
