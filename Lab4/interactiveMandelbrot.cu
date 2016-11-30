@@ -46,7 +46,7 @@ void initBitmap(int width, int height)
 
 // Select precision here! float or double!
 
-#define MYFLOAT float
+#define MYFLOAT double
 
 // User controlled parameters
 int maxiter = 20;
@@ -178,7 +178,8 @@ void Draw()
 {
 	printf("Draw! \n");
 	dim3 dimBlock( 16, 16 );
-	dim3 dimGrid( 64, 64 );
+
+	dim3 dimGrid( 128, 128 );
 	float theTime = 0;
 	cudaEvent_t myEvent;
   cudaEvent_t mySecondEvent;

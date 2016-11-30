@@ -18,7 +18,7 @@ void add_matrix(float *a, float *b, float *c, int N)
 
 int main()
 {
-	const int N = 256;
+	const int N = 128;
 
 	float *a = new float[N*N];
 	float *b = new float[N*N];

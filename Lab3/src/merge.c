@@ -198,10 +198,8 @@ drake_run(task_t *task)
 	// check drake_task_is_depleted(task_tp t)
 	//
 	// That returns 1 if all predecessors of task t are killed and all input buffers are empty, or if task t is killed and 0 otherwise.
-	if(drake_task_depleted(task))
-		return 1;
 
-	return 0;
+	return drake_task_depleted(task);
 }
 
 int

@@ -1,32 +1,89 @@
-Question 1:
 
   QUESTION: How many cores will simple.cu use, max, as written? How many SMs?
-  16 cores, one SM.
+  16 cores, one SM. (core == thread?)
 
   QUESTION: Is the calculated square root identical to what the CPU calculates? Should we assume that this is always the case?
-  Yes.
+  It is the same in our case. We are not sure whether this is always the case.
 
   QUESTION: How do you calculate the index in the array, using 2-dimensional blocks?
   int x = (blockIdx.x * blockDim.x + threadIdx.x);
   int y = (blockIdx.y * blockDim.y + threadIdx.y);
-  int offset = x+y * 16;
+  int offset = x+y * x_Size;
 
-  By calculating x and y independently from
+  By calculating x and y independently from our block and thread index and then finding the right offset.
 
   QUESTION: What happens if you use too many threads per block?
-  If we have too many threads, we get an error saying invalid configuration. This is due to hardware limitations.
+  If we have too many threads, we get an error saying invalid configuration. This is due to hardware limitations and depends on the GPU.
 
 
-
+QUESTION: At what data size is the GPU faster than the CPU?
   1024:
-  GPU:  0.000114 s
+  GPU: 0.006230  s
   CPU: 0.041841 s
 
-
   512:
-  GPU: 0.000034
+  GPU: 0.003401
   CPU: 0.009923
 
   256
-  GPU
+  GPU: 0.000953
   CPU:0.002579
+
+  16
+  GPU: 0.000642
+  CPU: 0.000006
+
+  ..never?
+
+QUESTION: What block size seems like a good choice? Compared to what?
+We felt we got the fastest result when we maxed the blocksize (16x16 threads).
+
+
+QUESTION: Write down your data size, block size and timing data for the best GPU performance you can get.
+
+(16, 16) blocksize
+(64, 64) gridsize
+1024x1024 matrix
+0.000114 s
+
+
+QUESTION: How much performance did you lose by making data accesses non-coalesced?
+Elapsed time: 0.000459 s, which is about 4 times slower.
+
+QUESTION: What were the main changes in order to make the Mandelbrot run in CUDA?
+We made computeFractal our kernel function. In that function we removed the two for loops representing pixels and found the x and y value similarly to our matrix above. We had to change some functions to __device__ so the GPU could find them. We also added a bunch of parameters to computeFractal that was needed.
+
+QUESTION: How many blocks and threads did you use?
+(16, 16) blocksize and 128x128x for gridsize. Ideally the gridsize should change depending on the image size.
+
+QUESTION: When you use the Complex class, what modifier did you have to use on the methods?
+__device__
+
+QUESTION: What performance did you get? How does that compare to the CPU solution?
+It is insanely faster.
+32 iterations: Elapsed time: 0.000239
+64 iterations: Elapsed time: 0.000256
+96 iterations: Elapsed time: 0.000285
+128 iterations: Elapsed time: 0.000331
+
+32 iterations: Elapsed Time: 0.117928
+64 iterations: Elapsed Time: 0.266670
+96 iterations: Elapsed Time: 0.295547
+128 iterations: Elapsed Time: 0.356509
+
+QUESTION: What performance did you get with float vs double precision?
+GPU:
+32 Elapsed time: 0.001123
+64 Elapsed time: 0.001431
+96 Elapsed time: 0.001751
+128 Elapsed time: 0.002048
+
+CPU:
+32 Elapsed Time: 0.097250
+64 Elapsed Time: 0.227381
+96 Elapsed Time: 0.278333
+128 Elapsed Time: 0.384425
+
+
+QUESTION: In Lab 1, load balancing was an important issue. Is that an issue here? Why/why not?
+No, since we are pretty much running one thread per pixel, so it cannot be more balanced.
