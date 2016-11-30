@@ -84,40 +84,40 @@
       <data key="v_max_width">1</data>
     </node>
 
-    <edge source="n0" target="n3">
+    <edge source="n0" target="n4">
       <data key="e_producer_name">output</data>
       <data key="e_consumer_name">left</data>
       <data key="e_type">int</data>
       <data key="e_rate">1</data>
     </edge>
 
-    <edge source="n1" target="n3">
+    <edge source="n1" target="n4">
       <data key="e_producer_name">output</data>
       <data key="e_consumer_name">right</data>
       <data key="e_type">int</data>
       <data key="e_rate">1</data>
     </edge>
 
-    <edge source="n2" target="n4">
+    <edge source="n2" target="n5">
       <data key="e_producer_name">output</data>
       <data key="e_consumer_name">left</data>
       <data key="e_type">int</data>
       <data key="e_rate">1</data>
     </edge>
 
-    <edge source="n3" target="n4">
-      <data key="e_producer_name">output</data>
-      <data key="e_consumer_name">right</data>
-      <data key="e_type">int</data>
-      <data key="e_rate">1</data>
-    </edge>
     <edge source="n3" target="n5">
       <data key="e_producer_name">output</data>
+      <data key="e_consumer_name">right</data>
+      <data key="e_type">int</data>
+      <data key="e_rate">1</data>
+    </edge>
+    <edge source="n4" target="n6">
+      <data key="e_producer_name">output</data>
       <data key="e_consumer_name">left</data>
       <data key="e_type">int</data>
       <data key="e_rate">1</data>
     </edge>
-    <edge source="n4" target="n5">
+    <edge source="n5" target="n6">
       <data key="e_producer_name">output</data>
       <data key="e_consumer_name">right</data>
       <data key="e_type">int</data>
