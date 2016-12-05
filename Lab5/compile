@@ -1,0 +1,6 @@
+ #!/bin/bash
+ #chmod 755
+nvcc bitonic_kernel.cu -o bitonic_kernel.o -c
+gcc -c bitonic_main.cpp -o bitonic_main.o -Iusr/local/cuda/include
+g++ bitonic_main.o bitonic_kernel.o milli.c -o bitonicgpu -L/usr/local/cuda/lib -lcuda -lcudart -lm
+./bitonicgpu

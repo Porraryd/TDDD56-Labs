@@ -121,9 +121,9 @@ drake_run(task_t *task)
 
 
 	// Merge as much as you can here
-		debug_int(parent_size);
-		debug_int(left_size);
-		debug_int(right_size);
+		//debug_size_t(parent_size);
+		//debug_size_t(left_size);
+		//debug_size_t(right_size);
 	while(left_consumed < left_size && right_consumed < right_size){
 		if (parent_pushed > parent_size-1){
 			break;
@@ -140,12 +140,12 @@ drake_run(task_t *task)
 		}
 
 	}
-	debug_int(left_consumed);
-	debug_int(right_consumed);
 /*
-
+	
 */
-	if (drake_task_killed(left_link->prod)){
+	
+
+	if (drake_task_killed(left_link->prod) && left_size == 0){
 
 		while(right_consumed < right_size){
 			if (parent_pushed > parent_size-1){
@@ -157,7 +157,7 @@ drake_run(task_t *task)
 		}
 	}
 
-	if (drake_task_killed(right_link->prod)){
+	if (drake_task_killed(right_link->prod) && right_size == 0){
 		while(left_consumed < left_size){
 			if (parent_pushed > parent_size-1){
 				break;
@@ -182,9 +182,15 @@ drake_run(task_t *task)
 
 	// Write the number of element you consumed from left child and right child into left_consumed and right_consumed, respectively
 	// and the total number of elements you pushed toward parent in parent_pushed
+		if(parent_pushed > 0) {
 
-		debug_int(parent_pushed);
-
+			debug_size_t(right_consumed);
+			debug_size_t(left_consumed);
+			debug_size_t(parent_pushed);
+			debug_size_t(right_size);
+			debug_size_t(left_size);
+			debug_size_t(parent_size);
+		}
 	// Now discarding input consumed and pushed output produced through channels and using the number of elements consumed and produced
 	// that you set above.
 	pelib_cfifo_discard(int)(left_link->buffer, left_consumed);
@@ -199,12 +205,14 @@ drake_run(task_t *task)
 	//
 	// That returns 1 if all predecessors of task t are killed and all input buffers are empty, or if task t is killed and 0 otherwise.
 
-	return drake_task_depleted(task);
+	return (drake_task_depleted(task) && left_size == 0 && right_size == 0);
 }
 
 int
 drake_kill(task_t *task)
 {
+	int task_killed = 4444;
+	debug_int(task_killed);
 	// Everything went just fine. Task just got killed
 	return 1;
 }
