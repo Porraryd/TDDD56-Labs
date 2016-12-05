@@ -119,6 +119,7 @@ drake_run(task_t *task)
 	// right is a pointer to data received from left child (contains right_size elements)
 	// parent is a pointer to communication buffer toward parent (can hold up to parent_size element /!\ left_size + right_size > parent_size)
 
+	if (parent_size > 0){
 
 	// Merge as much as you can here
 		//debug_size_t(parent_size);
@@ -145,7 +146,7 @@ drake_run(task_t *task)
 */
 	
 
-	if (drake_task_killed(left_link->prod) && pelib_cfifo_length(int)(left_link->buffer) == 0){
+	if (left_size == 0 && (left_link->prod == NULL || drake_task_killed(left_link->prod )) && pelib_cfifo_length(int)(left_link->buffer) == 0){
 
 		while(right_consumed < right_size){
 			if (parent_pushed > parent_size-1){
@@ -157,7 +158,7 @@ drake_run(task_t *task)
 		}
 	}
 
-	if (drake_task_killed(right_link->prod) && pelib_cfifo_length(int)(right_link->buffer) == 0){
+	if (right_size == 0 && (right_link->prod == NULL|| drake_task_killed(right_link->prod))  && pelib_cfifo_length(int)(right_link->buffer) == 0){
 		while(left_consumed < left_size){
 			if (parent_pushed > parent_size-1){
 				break;
@@ -204,8 +205,8 @@ drake_run(task_t *task)
 	// check drake_task_is_depleted(task_tp t)
 	//
 	// That returns 1 if all predecessors of task t are killed and all input buffers are empty, or if task t is killed and 0 otherwise.
-
-	return (drake_task_depleted(task)  );
+}
+	return (drake_task_depleted(task));// && pelib_cfifo_length(int)(right_link->buffer) == 0 && pelib_cfifo_length(int)(left_link->buffer) == 0 );
 }
 
 int
