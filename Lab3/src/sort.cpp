@@ -325,8 +325,8 @@ sort(int* array, size_t size)
 
 
 	// Alternatively, use C++ sequential sort, just to see how fast it is
-	//cxx_sort(array, size);
-
+	cxx_sort(array, size);
+	return;
 	// Note: you are NOT allowed to demonstrate code that uses C or C++ standard sequential or parallel sort or merge
 	// routines (qsort, std::sort, std::merge, etc). It's more interesting to learn by writing it yourself.
 

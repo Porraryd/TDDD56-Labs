@@ -25,7 +25,7 @@
       <data key="v_module">presort</data>
       <data key="v_workload">1</data>
       <data key="v_streaming">0</data>
-      <data key="v_efficiency">1 1e-06 1e-06 </data>
+      <data key="v_efficiency">1 1e-06 1e-06 1e06 </data>
       <data key="v_max_width">1</data>
     </node>
 
@@ -34,7 +34,7 @@
       <data key="v_module">presort</data>
       <data key="v_workload">1</data>
       <data key="v_streaming">0</data>
-      <data key="v_efficiency">1 1e-06 1e-06 </data>
+      <data key="v_efficiency">1e-06 1  1e-06 1e-06 </data>
       <data key="v_max_width">1</data>
     </node>
 
@@ -44,7 +44,7 @@
       <data key="v_module">presort</data>
       <data key="v_workload">1</data>
       <data key="v_streaming">0</data>
-      <data key="v_efficiency">1 1e-06 1e-06 </data>
+      <data key="v_efficiency">1e-06 1e-06 1 1e-06 </data>
       <data key="v_max_width">1</data>
     </node>
 
@@ -53,7 +53,7 @@
       <data key="v_module">presort</data>
       <data key="v_workload">1</data>
       <data key="v_streaming">0</data>
-      <data key="v_efficiency">1 1e-06 1e-06 </data>
+      <data key="v_efficiency">1e-06  1e-06 1e-06 1 </data>
       <data key="v_max_width">1</data>
     </node>
 
@@ -62,7 +62,7 @@
       <data key="v_module">merge</data>
       <data key="v_workload">1</data>
       <data key="v_streaming">1</data>
-      <data key="v_efficiency">1 1e-06 1e-06 </data>
+      <data key="v_efficiency">1 1e-06 1e-06 1e-06 </data>
       <data key="v_max_width">1</data>
     </node>
 
@@ -71,7 +71,7 @@
       <data key="v_module">merge</data>
       <data key="v_workload">1</data>
       <data key="v_streaming">1</data>
-      <data key="v_efficiency">1 1e-06 1e-06 </data>
+      <data key="v_efficiency">1e-06 1e-06 1e-06 1 </data>
       <data key="v_max_width">1</data>
     </node>
 
@@ -80,7 +80,7 @@
       <data key="v_module">merge</data>
       <data key="v_workload">1</data>
       <data key="v_streaming">1</data>
-      <data key="v_efficiency">1 1e-06 1e-06 </data>
+      <data key="v_efficiency">1e-06 1e-06 1 1e-06 </data>
       <data key="v_max_width">1</data>
     </node>
 
