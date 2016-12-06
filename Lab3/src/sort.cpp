@@ -95,6 +95,36 @@ pick_pivot(int* array, int size){
 	return mid;
 }
 
+inline void swap(int* array, int a, int b) {
+  int c = array[a];
+  array[a] = array[b];
+  array[b] = c;
+}
+
+static int partition(void* args)  {
+  
+  qs_param_t* params = (qs_param_t*)args;
+  int* array = params->array;
+  int size = params->size;
+  int left, right;
+  int last = size-1;
+  int pivot_index = pick_pivot(array, size);
+  int pivot = array[pick_pivot(array, size)];
+  swap(array, pivot_index, last);
+  left = 0;
+
+  for(int i = 0; i < last; i++) {
+    
+    if((i%2) ? array[i] <= pivot : array[i] < pivot)  {
+      swap(array, i, left++);
+    }
+  }
+  swap(array, last, left);
+
+  return left;
+
+}
+
 static
 void
 insertion_sort(int* array, int count){
@@ -125,7 +155,7 @@ simple_quicksort(void* args)
 	int *left, *right;
 	size_t left_size = 0, right_size = 0;
 
-		qs_param_t* params = (qs_param_t*)args;
+  qs_param_t* params = (qs_param_t*)args;
 	int size = params->size;
 	int* array = params->array;
 	pivot_count = 0;
@@ -139,16 +169,16 @@ simple_quicksort(void* args)
 
 		left = (int*)malloc(size * sizeof(int));
 		right = (int*)malloc(size * sizeof(int));
-
+    int mid = partition(args);
 		// Split
 		for(i = 0; i < size; i++)
 		{
-			if(array[i] < pivot)
+			if(i < mid)
 			{
 				left[left_size] = array[i];
 				left_size++;
 			}
-			else if(array[i] > pivot)
+			else if(i  > mid)
 			{
 				right[right_size] = array[i];
 				right_size++;
