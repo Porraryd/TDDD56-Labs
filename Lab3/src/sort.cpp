@@ -72,6 +72,8 @@ cxx_sort(int *array, size_t size)
 struct quicksort_params {
 	size_t size;
 	int* array;
+	int from;
+	int to;
 	int depth;
 };
 
@@ -107,13 +109,13 @@ static int partition(void* args)  {
   int* array = params->array;
   int size = params->size;
   int left, right;
-  int last = size-1;
+  int last = params->to-1;
   int pivot_index = pick_pivot(array, size);
   int pivot = array[pick_pivot(array, size)];
   swap(array, pivot_index, last);
-  left = 0;
+  left = params->from;
 
-  for(int i = 0; i < last; i++) {
+  for(int i = params->from; i < last; i++) {
     
     if((i%2) ? array[i] <= pivot : array[i] < pivot)  {
       swap(array, i, left++);
@@ -166,35 +168,24 @@ simple_quicksort(void* args)
 	if(size > 5000)
 	{
 		pivot = array[pick_pivot(array, size)];
+		int mid = partition(args);
 
 		left = (int*)malloc(size * sizeof(int));
 		right = (int*)malloc(size * sizeof(int));
-    int mid = partition(args);
 		// Split
-		for(i = 0; i < size; i++)
-		{
-			if(i < mid)
-			{
-				left[left_size] = array[i];
-				left_size++;
-			}
-			else if(i  > mid)
-			{
-				right[right_size] = array[i];
-				right_size++;
-			}
-			else
-			{
-				pivot_count++;
-			}
-		}
 		qs_param_t* left_p = (qs_param_t*)malloc(sizeof(qs_param_t));
 		qs_param_t* right_p =  (qs_param_t*)malloc(sizeof(qs_param_t));
-		left_p->size = left_size;
-		right_p->size = right_size;
+		left_p->size = size;
+		right_p->size = size;
 
-		left_p->array = left;
-		right_p->array = right;
+		left_p->array = array;
+		right_p->array = array;
+		
+		left_p->from = params->from;
+		left_p->to = mid;
+
+		right_p->from = mid;
+		right_p->to = params->to;		
 
 		simple_quicksort(left_p);
 		simple_quicksort(right_p);
@@ -229,6 +220,8 @@ parallel_quicksort(void* args)
 
 	int size = params->size;
 	int* array = params->array;
+	int from = params->from;
+	int to = params->to;
 	// This is a bad threshold. Better have a higher value
 	// And use a non-recursive sort, such as insert sort
 	// then tune the threshold value
@@ -238,38 +231,31 @@ parallel_quicksort(void* args)
 		// Better take a sample and pick
 		// it median value.
 		pivot = array[pick_pivot(array, size)];
+		int mid = partition(args);
 
 		left = (int*)malloc(size * sizeof(int));
 		right = (int*)malloc(size * sizeof(int));
 
 		// Split
-		for(i = 0; i < size; i++)
-		{
-			if(array[i] < pivot)
-			{
-				left[left_size] = array[i];
-				left_size++;
-			}
-			else if(array[i] > pivot)
-			{
-				right[right_size] = array[i];
-				right_size++;
-			}
-			else
-			{
-				pivot_count++;
-			}
-		}
 
 		qs_param_t* left_p = (qs_param_t*)malloc(sizeof(qs_param_t));
 		qs_param_t* right_p =  (qs_param_t*)malloc(sizeof(qs_param_t));
-		left_p->size = left_size;
+
+		right_p->size = right_size;
 		right_p->size = right_size;
 
 		left_p->array = left;
 		right_p->array = right;
+
 		left_p->depth = params->depth + 1;
 		right_p->depth = params->depth + 1;
+
+		left_p->from = params->from;
+		left_p->to = mid;
+
+		right_p->from = mid;
+		right_p->to = params->to;
+
 
 		pthread_t thread1, thread2;
 
@@ -355,8 +341,8 @@ sort(int* array, size_t size)
 
 
 	// Alternatively, use C++ sequential sort, just to see how fast it is
-	cxx_sort(array, size);
-	return;
+//	cxx_sort(array, size);
+//	return;
 	// Note: you are NOT allowed to demonstrate code that uses C or C++ standard sequential or parallel sort or merge
 	// routines (qsort, std::sort, std::merge, etc). It's more interesting to learn by writing it yourself.
 
@@ -365,6 +351,8 @@ sort(int* array, size_t size)
 	params->size = size;
 	params->array = array;
 	params->depth = 1;
+	params->from = 0;
+	params->to = size;
 	// Reproduce this structure here and there in your code to compile sequential or parallel versions of your code.
 #if NB_THREADS < 2
 	simple_quicksort(params);
