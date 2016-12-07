@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "milli.h"
 
-const int BLOCKSIZE = 128;
+const int BLOCKSIZE = 1024;
 __global__ void find_max(int *indata, int *outdata, int N)
 {
 
@@ -81,7 +81,7 @@ void find_max_cpu(int *data, int N)
 	data[0] = m;
 }
 
-#define SIZE 10000000
+#define SIZE 50000000
 //#define SIZE 16
 // Dummy data in comments below for testing
 int data[SIZE];// = {1, 2, 5, 3, 6, 8, 5, 3, 1, 65, 8, 5, 3, 34, 2, 54};

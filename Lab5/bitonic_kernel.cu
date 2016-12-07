@@ -17,7 +17,7 @@ static void exchange(int *i, int *j)
 }
 
 __global__ void bitonic_sort(int *data, int N, int j, int k) {
-		int i =  threadIdx.x + blockDim.x*blockIdx.x + blockDim.x*blockDim.y*blockIdx.y;
+		int i =  threadIdx.x + blockDim.x*blockIdx.x;
 		if (i < N){
 
 			int ixj=i^j; // Calculate indexing!
@@ -49,6 +49,7 @@ void bitonic_gpu(int *data, int N)
     for (j=k>>1;j>0;j=j>>1) // Inner loop, half size for each step
     {
 			bitonic_sort<<<dimGrid, dimBlock>>>(gpudata, N, j, k);
+			cudaThreadSynchronize();
     }
   }
 

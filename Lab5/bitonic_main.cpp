@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "milli.h"
 
-#define SIZE 65536
+#define SIZE 131072
 #define MAXPRINTSIZE 32
 int data[SIZE] = {1, 2, 5, 3, 6, 8, 5, 3, 1, 65, 8, 5, 3, 34, 2, 54};
 int data2[SIZE] = {1, 2, 5, 3, 6, 8, 5, 3, 1, 65, 8, 5, 3, 34, 2, 54};
