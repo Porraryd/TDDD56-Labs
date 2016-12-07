@@ -128,7 +128,7 @@ static int partition(void* args)  {
 
   for(int i = params->from; i < last; i++) {
 
-    if(array[i] < pivot)  {
+    if((i%2) ? array[i] <= pivot : array[i] < pivot)  {
 			std::swap(array[i], array[left++]);
     }
   }
@@ -141,10 +141,10 @@ static int partition(void* args)  {
 
 static
 void
-insertion_sort(int* array, int count){
+insertion_sort(int* array, int from, int to){
 	int i, j, tmp;
-
-	for (i= 0; i < count; i++){
+		
+	for (i= from; i <= to; i++){
 		j = i;
 
 		while (j > 0 && array[j] < array[j-1]){
@@ -169,7 +169,7 @@ simple_quicksort(void* args)
 	int size = params->size;
 	int* array = params->array;
 
-	if(size > 10)
+	if(size > 5000)
 	{
 		int mid = partition(args);
 
@@ -183,9 +183,9 @@ simple_quicksort(void* args)
 		right_p->array = array;
 
 		left_p->from = params->from;
-		left_p->to = mid;
+		left_p->to = mid-1;
 
-		right_p->from = mid+1;
+		right_p->from = mid;
 		right_p->to = params->to;
 
 		simple_quicksort(left_p);
@@ -197,7 +197,7 @@ simple_quicksort(void* args)
 	}
 	else
 	{
-		insertion_sort(array,size);
+		insertion_sort(array,params->from, params->to);
 	}
 }
 static
@@ -210,7 +210,7 @@ parallel_quicksort(void* args)
 	int size = params->size;
 	int* array = params->array;
 
-	if(size > 10)
+	if(size > 5000)
 	{
 		int mid = partition(args);
 
@@ -227,9 +227,9 @@ parallel_quicksort(void* args)
 		right_p->depth = params->depth + 1;
 
 		left_p->from = params->from;
-		left_p->to = mid;
+		left_p->to = mid-1;
 
-		right_p->from = mid+1;
+		right_p->from = mid;
 		right_p->to = params->to;
 
 		pthread_t thread1, thread2;
@@ -257,7 +257,7 @@ parallel_quicksort(void* args)
 		pthread_join( thread1, NULL);
 
 		#elif NB_THREADS == 4
-		if (params->depth == 2){
+		if (params->depth <= 2){
 			pthread_create(&thread1, NULL, parallel_quicksort, (void*)left_p);
 			parallel_quicksort((void*)right_p);
 		}else{
@@ -273,7 +273,7 @@ parallel_quicksort(void* args)
 	}
 	else
 	{
-		insertion_sort(array, size);
+		insertion_sort(array, params->from, params->to);
 	}
 }
 
