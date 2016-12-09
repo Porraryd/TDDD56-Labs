@@ -2,7 +2,7 @@
  * Image filter in OpenCL
  */
 
-#define KERNELSIZE 4
+#define KERNELSIZE 10
 #define BLOCK_SIZE 16
 #define USE_SHARED 1
 
@@ -13,7 +13,7 @@ __kernel void filter(__global unsigned char *image, __global unsigned char *out,
   unsigned int i = get_global_id(1) % 512;
   unsigned int j = get_global_id(0) % 512;
   
-  #ifdef USE_SHARED
+  #if USE_SHARED == 1
   unsigned int ii = get_local_id(1);
   unsigned int jj = get_local_id(0);
   if (j < n && i < m) {
@@ -82,11 +82,11 @@ __kernel void filter(__global unsigned char *image, __global unsigned char *out,
         sumx=0;sumy=0;sumz=0;
     for(k=-KERNELSIZE;k<=KERNELSIZE;k++)
         for(l=-KERNELSIZE;l<=KERNELSIZE;l++) { 
-          #ifdef USE_SHARED
+          #if USE_SHARED == 1
             sumx += shared[ii+k+KERNELSIZE][jj+l+KERNELSIZE][0];
             sumy += shared[ii+k+KERNELSIZE][jj+l+KERNELSIZE][1];
             sumz += shared[ii+k+KERNELSIZE][jj+l+KERNELSIZE][2];
-          #elif          
+          #else         
            sumx += image[((i+k)*n+(j+l))*3+0];
            sumy += image[((i+k)*n+(j+l))*3+1];
            sumz += image[((i+k)*n+(j+l))*3+2];
@@ -97,11 +97,11 @@ __kernel void filter(__global unsigned char *image, __global unsigned char *out,
         out[(i*n+j)*3+2] = sumz/divby;
     }
     else {
-      #ifdef USE_SHARED
+      #if USE_SHARED == 1
         out[(i*n+j)*3+0] = shared[ii+KERNELSIZE][jj+KERNELSIZE][0];
         out[(i*n+j)*3+1] = shared[ii+KERNELSIZE][jj+KERNELSIZE][1];
         out[(i*n+j)*3+2] = shared[ii+KERNELSIZE][jj+KERNELSIZE][2];
-        #elif
+        #else
         out[(i*n+j)*3+0] = image[(i*n+j)*3+0];
         out[(i*n+j)*3+1] = image[(i*n+j)*3+1];
         out[(i*n+j)*3+2] = image[(i*n+j)*3+2];
