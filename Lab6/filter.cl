@@ -20,7 +20,7 @@ __kernel void filter(__global unsigned char *image, __global unsigned char *out,
     shared[ii+KERNELSIZE][jj+KERNELSIZE][0] = image[(i*n+j)*3+0];
     shared[ii+KERNELSIZE][jj+KERNELSIZE][1] = image[(i*n+j)*3+1];
     shared[ii+KERNELSIZE][jj+KERNELSIZE][2] = image[(i*n+j)*3+2];
-
+    if (i >= KERNELSIZE && i < m-KERNELSIZE && j >=KERNELSIZE && j < m-KERNELSIZE){
     if (ii <= KERNELSIZE) {
       shared[KERNELSIZE-ii-1][jj+KERNELSIZE][0] = image[((i-ii-1)*n+j)*3+0];
       shared[KERNELSIZE-ii-1][jj+KERNELSIZE][1] = image[((i-ii-1)*n+j)*3+1];
@@ -62,6 +62,7 @@ __kernel void filter(__global unsigned char *image, __global unsigned char *out,
         shared[ii+KERNELSIZE*2][jj+KERNELSIZE*2][0] = image[((i+KERNELSIZE)*n+j+KERNELSIZE)*3+0];
         shared[ii+KERNELSIZE*2][jj+KERNELSIZE*2][1] = image[((i+KERNELSIZE)*n+j+KERNELSIZE)*3+1];
         shared[ii+KERNELSIZE*2][jj+KERNELSIZE*2][2] = image[((i+KERNELSIZE)*n+j+KERNELSIZE)*3+2];
+    }
     }
   }
   
