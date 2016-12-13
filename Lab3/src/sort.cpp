@@ -2,7 +2,7 @@
 #include <algorithm>
 
 #include <string.h>
-
+#include <cmath>
 #include "sort.h"
 	#include <pthread.h>
 
@@ -98,7 +98,7 @@ insertion_sort(int* array, int from, int to){
 
 static
 int
-pick_pivot(int* array, int from, int to){
+pick_pivot(int* array, int from, int to, int divider =2 ){
 	if (to-from < 3)
 		return from;
 
@@ -112,40 +112,38 @@ pick_pivot(int* array, int from, int to){
 	if (array[to] < array[mid])
 		std::swap(array[mid], array[to]);
 
-	return mid;
+	return array[mid];
 }
 
 static
 int
-pick_pivot2(int* array, int from, int to){
-    std::cout << array[1];
-
+pick_pivot2(int* array, int from, int to, int divider = 2){
 	if (to-from < 3)
 		return from;
 
 	int mid = from + (to-from)/2;
-    
 	//create new list
 	int pivotSize = sqrtf(to-from)+1;
+	if (pivotSize > 200){
+		pivotSize = 200;
+	} 
 	int* smallList = (int*)malloc(sizeof(int) * pivotSize);
 
-    int currI;
+    int currI=0;
     while(currI < pivotSize){
         if (currI < pivotSize/3){
             smallList[currI] = array[from+currI];
         }else if(currI < 2*pivotSize/3){
             smallList[currI] = array[mid - pivotSize/3 - pivotSize/6 + currI];
         }else{
-            smallList[currI] = array[to - currI + 2*pivotSize/3];
+            smallList[currI] = array[to - currI + 2*pivotSize/3 - 1];
         }
         currI++;
     }
-
 	insertion_sort(smallList, 0, currI-1);
-	int pivot = smallList[currI/2];
-
+	int pivot = smallList[currI/divider];
 	free(smallList);
-
+	
 	return pivot;
 }
 
@@ -164,7 +162,7 @@ static void printArray(qs_param_t* params) {
 	printf("\n");
 
 }
-static int partition(void* args)  {
+static int partition(void* args, int split = 2)  {
 
   qs_param_t* params = (qs_param_t*)args;
 
@@ -172,19 +170,18 @@ static int partition(void* args)  {
   int size = params->size;
   int left, right;
   int last = params->to;
-  int pivot_index = pick_pivot(array, params->from , params->to);
-  int pivot = array[pivot_index];
+  int pivot = pick_pivot2(array, params->from , params->to, split);
+  //int pivot = array[pivot_index];
 
-	std::swap(array[pivot_index], array[last]);
+	//std::swap(array[pivot_index], array[last]);
   left = params->from;
-
-  for(int i = params->from; i < last; i++) {
+  for(int i = params->from; i <= last; i++) {
 
     if((i%2) ? array[i] <= pivot : array[i] < pivot)  {
 			std::swap(array[i], array[left++]);
     }
   }
-		std::swap(array[last], array[left]);
+	//	std::swap(array[last], array[left]);
 
 
   return left;
@@ -205,10 +202,9 @@ simple_quicksort(void* args)
   qs_param_t* params = (qs_param_t*)args;
 	int size = params->size;
 	int* array = params->array;
-
 	if(size > 5000)
 	{
-		int mid = partition(args);
+		int mid = partition(args,2);
 
 		// Split
 		qs_param_t* left_p = (qs_param_t*)malloc(sizeof(qs_param_t));
@@ -247,10 +243,17 @@ parallel_quicksort(void* args)
 	int size = params->size;
 	int* array = params->array;
 
-	if(size > 5000)
+	if(size > 50)
 	{
-		int mid = partition(args);
-
+		#if NB_THREADS == 3
+		int mid;
+		if (params->depth == 1)
+			mid = partition(args, 3);
+		else
+			mid = partition(args,2);
+		#else
+		int mid = partition(args,2);
+		#endif
 		// Split
 		qs_param_t* left_p = (qs_param_t*)malloc(sizeof(qs_param_t));
 		qs_param_t* right_p =  (qs_param_t*)malloc(sizeof(qs_param_t));
@@ -274,7 +277,7 @@ parallel_quicksort(void* args)
 		#if NB_THREADS == 2
 
 		if (params->depth == 1){
-			pthread_create(&thread1, NULL, parallel_quicksort, (void*)left_p);
+			pthread_create(&thread1, NULL, simple_quicksort, (void*)left_p);
 			parallel_quicksort((void*)right_p);
 		}else{
 			simple_quicksort((void*)left_p);
@@ -283,12 +286,17 @@ parallel_quicksort(void* args)
 		pthread_join( thread1, NULL);
 
 		#elif NB_THREADS == 3
-		if(params->depth > 2){
-			simple_quicksort((void*)left_p);
+		if(params->depth == 1){
+			pthread_create(&thread1, NULL, simple_quicksort, (void*)left_p);
+			//parallel_quicksort((void*)right_p);
+			parallel_quicksort((void*)right_p);
+		}
+		else if(params->depth == 2){
+			pthread_create(&thread1, NULL, simple_quicksort, (void*)left_p);
 			simple_quicksort((void*)right_p);
 		}else{
-			pthread_create(&thread1, NULL, parallel_quicksort, (void*)left_p);
-			parallel_quicksort((void*)right_p);
+			simple_quicksort((void*)left_p);
+			simple_quicksort((void*)right_p);
 		}
 
 		pthread_join( thread1, NULL);
