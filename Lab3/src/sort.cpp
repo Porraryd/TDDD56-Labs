@@ -80,6 +80,23 @@ struct quicksort_params {
 typedef struct quicksort_params qs_param_t;
 
 static
+void
+insertion_sort(int* array, int from, int to){
+	int i, j, tmp;
+		
+	for (i= from; i <= to; i++){
+		j = i;
+
+		while (j > 0 && array[j] < array[j-1]){
+			tmp = array[j];
+			array[j] = array[j-1];
+			array[j-1] = tmp;
+			j--;
+		}
+	}
+}
+
+static
 int
 pick_pivot(int* array, int from, int to){
 	if (to-from < 3)
@@ -97,6 +114,41 @@ pick_pivot(int* array, int from, int to){
 
 	return mid;
 }
+
+static
+int
+pick_pivot2(int* array, int from, int to){
+    std::cout << array[1];
+
+	if (to-from < 3)
+		return from;
+
+	int mid = from + (to-from)/2;
+    
+	//create new list
+	int pivotSize = sqrtf(to-from)+1;
+	int* smallList = (int*)malloc(sizeof(int) * pivotSize);
+
+    int currI;
+    while(currI < pivotSize){
+        if (currI < pivotSize/3){
+            smallList[currI] = array[from+currI];
+        }else if(currI < 2*pivotSize/3){
+            smallList[currI] = array[mid - pivotSize/3 - pivotSize/6 + currI];
+        }else{
+            smallList[currI] = array[to - currI + 2*pivotSize/3];
+        }
+        currI++;
+    }
+
+	insertion_sort(smallList, 0, currI-1);
+	int pivot = smallList[currI/2];
+
+	free(smallList);
+
+	return pivot;
+}
+
 
 inline void swap(int* array, int a, int b) {
   int c = array[a];
@@ -139,22 +191,7 @@ static int partition(void* args)  {
 
 }
 
-static
-void
-insertion_sort(int* array, int from, int to){
-	int i, j, tmp;
-		
-	for (i= from; i <= to; i++){
-		j = i;
 
-		while (j > 0 && array[j] < array[j-1]){
-			tmp = array[j];
-			array[j] = array[j-1];
-			array[j-1] = tmp;
-			j--;
-		}
-	}
-}
 
 
 // A very simple quicksort implementation
