@@ -1,0 +1,23 @@
+Question: How is the communication between the host and the graphic card handled?
+
+Question: What function executes your kernel?
+clEnqueueNDRangeKernel(commands, kernel, 1, NULL, &global, &local, 0, NULL, NULL);
+
+Question: How does the kernel know what element to work on?
+get_global_id(0);
+
+Question: How much data did you put in local (shared memory)?
+__local unsigned char shared[BLOCK_SIZE+KERNELSIZE*2][BLOCK_SIZE+KERNELSIZE*2][3];
+Our blocksize is 16. Our kernelsize is atm 10. * 2 = 20. 
+16+20 = 36.
+36*36*3 bytes (a char is 8 bits == 1 byte)
+
+Question: How much data does each thread copy to local memory?
+
+Question: How did you handle necessary overlap between work groups?
+
+Question: If we woud like to increase the block size, about how big work gropus would be safe to use in this case? Why?
+
+Question: How much speedup did you get over the naive version?
+
+
