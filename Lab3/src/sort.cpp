@@ -175,7 +175,7 @@ static int partition(void* args, int split = 2)  {
 
 	//std::swap(array[pivot_index], array[last]);
   left = params->from;
-  for(int i = params->from; i <= last; i++) {
+  for(int i = params->from; i < last; i++) {
 
     if((i%2) ? array[i] <= pivot : array[i] < pivot)  {
 			std::swap(array[i], array[left++]);
@@ -243,7 +243,7 @@ parallel_quicksort(void* args)
 	int size = params->size;
 	int* array = params->array;
 
-	if(size > 50)
+	if(size > 5000)
 	{
 		#if NB_THREADS == 3
 		int mid;
@@ -273,12 +273,12 @@ parallel_quicksort(void* args)
 		right_p->to = params->to;
 
 		pthread_t thread1, thread2;
-
+	
 		#if NB_THREADS == 2
 
 		if (params->depth == 1){
 			pthread_create(&thread1, NULL, simple_quicksort, (void*)left_p);
-			parallel_quicksort((void*)right_p);
+			simple_quicksort((void*)right_p);
 		}else{
 			simple_quicksort((void*)left_p);
 			simple_quicksort((void*)right_p);
