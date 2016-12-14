@@ -13,11 +13,20 @@ Our blocksize is 16. Our kernelsize is atm 10. * 2 = 20.
 36*36*3 bytes (a char is 8 bits == 1 byte)
 
 Question: How much data does each thread copy to local memory?
+Depends on what thread is being utilized. Each thread handles about 1-4 pixels.
 
 Question: How did you handle necessary overlap between work groups?
+By syncing the shared array after doing the writes for each thread calling the function   
+barrier(CLK_LOCAL_MEM_FENCE);
 
-Question: If we woud like to increase the block size, about how big work gropus would be safe to use in this case? Why?
+--Fast såhär är det inte. För den verkar bara synka mellan trådar i en singel work group
+
+--Menas det att vi bestämmer ett index med hjälp av det globala id:et OCH det lokala id:et?
+
+
+Question: If we would like to increase the block size, about how big work gropus would be safe to use in this case? Why?
 
 Question: How much speedup did you get over the naive version?
+--
 
 
