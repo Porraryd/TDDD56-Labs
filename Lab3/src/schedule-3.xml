@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schedule name="lpt" appname="pipelined_merge">
  <core coreid="1">
-  <task name="leaf_4" start="0.000000000" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
-  <task name="leaf_1" start="0.000000286" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
-  <task name="merge1" start="0.000000571" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="leaf_7" start="0.000000000" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="leaf_4" start="0.285714298" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="leaf_1" start="0.571428597" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="merge6" start="0.571428895" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="merge2" start="0.857143164" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
  </core>
  <core coreid="2">
-  <task name="leaf_2" start="0.000000000" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
-  <task name="merge2" start="0.000000286" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="leaf_8" start="0.000000000" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="leaf_5" start="0.285714298" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="leaf_2" start="0.285714597" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="merge5" start="0.571428895" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="merge4" start="0.571429193" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="merge1" start="0.857143462" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
  </core>
  <core coreid="3">
-  <task name="leaf_3" start="0.000000000" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
-  <task name="root" start="0.000000286" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="leaf_6" start="0.000000000" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="leaf_3" start="0.285714298" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="root" start="0.571428597" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
+  <task name="merge3" start="0.857142866" frequency="3500000.000000" width="1.000000" workload="1.000000"/>
  </core>
 </schedule>

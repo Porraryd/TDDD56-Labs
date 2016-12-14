@@ -16,11 +16,14 @@ bincxx_parallel-sort_utils.o: utils.c /usr/include/stdc-predef.h /usr/include/st
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
+ /usr/include/x86_64-linux-gnu/bits/select2.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/alloca.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /usr/include/ucontext.h /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib.h /usr/include/ucontext.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
  /usr/include/x86_64-linux-gnu/bits/siginfo.h \
  /usr/include/x86_64-linux-gnu/bits/sigaction.h \
  /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
@@ -32,6 +35,8 @@ bincxx_parallel-sort_utils.o: utils.c /usr/include/stdc-predef.h /usr/include/st
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h \
  /home/nicme26/tddd56/include/pelib/template.h \
  /home/nicme26/tddd56/include/pelib/array.h \
  /home/nicme26/tddd56/include/pelib/iterator.h \
@@ -63,10 +68,13 @@ utils.c:
 /usr/include/x86_64-linux-gnu/bits/select.h:
 /usr/include/x86_64-linux-gnu/bits/sigset.h:
 /usr/include/x86_64-linux-gnu/bits/time.h:
+/usr/include/x86_64-linux-gnu/bits/select2.h:
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 /usr/include/alloca.h:
+/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
 /usr/include/ucontext.h:
 /usr/include/x86_64-linux-gnu/sys/ucontext.h:
 /usr/include/signal.h:
@@ -86,6 +94,8 @@ utils.c:
 /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h:
 /usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
 /usr/include/x86_64-linux-gnu/bits/sys_errlist.h:
+/usr/include/x86_64-linux-gnu/bits/stdio.h:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:
 /home/nicme26/tddd56/include/pelib/template.h:
 /home/nicme26/tddd56/include/pelib/array.h:
 /home/nicme26/tddd56/include/pelib/iterator.h:

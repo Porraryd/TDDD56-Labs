@@ -83,7 +83,7 @@ static
 void
 insertion_sort(int* array, int from, int to){
 	int i, j, tmp;
-		
+
 	for (i= from; i <= to; i++){
 		j = i;
 
@@ -118,32 +118,34 @@ pick_pivot(int* array, int from, int to, int divider =2 ){
 static
 int
 pick_pivot2(int* array, int from, int to, int divider = 2){
-	if (to-from < 3)
+	int size = to -from;
+	if (size < 3)
 		return from;
 
-	int mid = from + (to-from)/2;
+	int mid = from + (size)/2;
 	//create new list
-	int pivotSize = sqrtf(to-from)+1;
-	if (pivotSize > 200){
-		pivotSize = 200;
-	} 
-	int* smallList = (int*)malloc(sizeof(int) * pivotSize);
+	int pivotSize = 50;
+	if (size > 2500){
+		pivotSize = sqrtf(size)+1;
+	}
+	int smallList[pivotSize];
 
     int currI=0;
+		int step =(size-1)/pivotSize;
     while(currI < pivotSize){
-        if (currI < pivotSize/3){
-            smallList[currI] = array[from+currI];
-        }else if(currI < 2*pivotSize/3){
-            smallList[currI] = array[mid - pivotSize/3 - pivotSize/6 + currI];
-        }else{
-            smallList[currI] = array[to - currI + 2*pivotSize/3 - 1];
-        }
+				smallList[currI] = array[from + currI*step -1];
+        // if (currI < pivotSize/3){
+        //     smallList[currI] = array[from+currI];
+        // }else if(currI < 2*pivotSize/3){
+        //     smallList[currI] = array[mid - pivotSize/3 - pivotSize/6 + currI];
+        // }else{
+        //     smallList[currI] = array[to - currI + 2*pivotSize/3 - 1];
+        // }
         currI++;
     }
 	insertion_sort(smallList, 0, currI-1);
 	int pivot = smallList[currI/divider];
-	free(smallList);
-	
+
 	return pivot;
 }
 
@@ -175,7 +177,7 @@ static int partition(void* args, int split = 2)  {
 
 	//std::swap(array[pivot_index], array[last]);
   left = params->from;
-  for(int i = params->from; i < last; i++) {
+  for(int i = params->from; i <= last; i++) {
 
     if((i%2) ? array[i] <= pivot : array[i] < pivot)  {
 			std::swap(array[i], array[left++]);
@@ -202,7 +204,7 @@ simple_quicksort(void* args)
   qs_param_t* params = (qs_param_t*)args;
 	int size = params->size;
 	int* array = params->array;
-	if(size > 5000)
+	if(size > 100)
 	{
 		int mid = partition(args,2);
 
@@ -243,7 +245,7 @@ parallel_quicksort(void* args)
 	int size = params->size;
 	int* array = params->array;
 
-	if(size > 5000)
+	if(size > 100)
 	{
 		#if NB_THREADS == 3
 		int mid;
@@ -260,6 +262,8 @@ parallel_quicksort(void* args)
 
 		left_p->size = mid - params->from;
 		right_p->size = params->to - mid;
+		debug_int(left_p->size);
+		debug_int(right_p->size);
 
 		left_p->array = array;
 		right_p->array = array;
@@ -273,7 +277,7 @@ parallel_quicksort(void* args)
 		right_p->to = params->to;
 
 		pthread_t thread1, thread2;
-	
+
 		#if NB_THREADS == 2
 
 		if (params->depth == 1){

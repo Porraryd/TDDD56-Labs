@@ -17,9 +17,12 @@ drakecc_merge.schedule.o: merge.schedule.c /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
+ /usr/include/x86_64-linux-gnu/bits/select2.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/alloca.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib.h \
  /home/nicme26/tddd56/include/drake/schedule.h \
  /home/nicme26/tddd56/include/drake/task.h \
  /home/nicme26/tddd56/include/pelib/string.h \
@@ -28,6 +31,8 @@ drakecc_merge.schedule.o: merge.schedule.c /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h \
  /home/nicme26/tddd56/include/pelib/template.h \
  /home/nicme26/tddd56/include/pelib/iterator.h \
  /home/nicme26/tddd56/include/pelib/set.h \
@@ -62,10 +67,13 @@ merge.schedule.c:
 /usr/include/x86_64-linux-gnu/bits/select.h:
 /usr/include/x86_64-linux-gnu/bits/sigset.h:
 /usr/include/x86_64-linux-gnu/bits/time.h:
+/usr/include/x86_64-linux-gnu/bits/select2.h:
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 /usr/include/alloca.h:
+/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
 /home/nicme26/tddd56/include/drake/schedule.h:
 /home/nicme26/tddd56/include/drake/task.h:
 /home/nicme26/tddd56/include/pelib/string.h:
@@ -77,6 +85,8 @@ merge.schedule.c:
 /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h:
 /usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
 /usr/include/x86_64-linux-gnu/bits/sys_errlist.h:
+/usr/include/x86_64-linux-gnu/bits/stdio.h:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:
 /home/nicme26/tddd56/include/pelib/template.h:
 /home/nicme26/tddd56/include/pelib/iterator.h:
 /home/nicme26/tddd56/include/pelib/set.h:

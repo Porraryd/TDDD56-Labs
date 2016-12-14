@@ -46,7 +46,7 @@ int init_OpenCL()
   // Get the GPU device
   ciErrNum = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, NULL);
   printCLError(ciErrNum,1);
-  
+
   // create the OpenCL context on the device
   cxGPUContext = clCreateContext(0, 1, &device, NULL, NULL, &ciErrNum);
   printCLError(ciErrNum,2);
@@ -54,11 +54,11 @@ int init_OpenCL()
   ciErrNum = clGetDeviceInfo(device,CL_DEVICE_MAX_WORK_GROUP_SIZE,sizeof(size_t),&noWG,NULL);
   printCLError(ciErrNum,3);
   printf("maximum number of workgroups: %d\n", (int)noWG);
-  
+
   // create command queue
   commandQueue = clCreateCommandQueue(cxGPUContext, device, 0, &ciErrNum);
   printCLError(ciErrNum,4);
-  
+
   // 0 means no error
   if (ciErrNum == CL_SUCCESS) return 0;
   else
@@ -70,33 +70,33 @@ int readAndBuildKernel(char *filename)
   cl_int ciErrNum = CL_SUCCESS;
   size_t kernelLength;
   char *source;
-  
+
   source = readFile(filename);
   kernelLength = strlen(source);
-  
+
   // create the program
-  theProgram = clCreateProgramWithSource(cxGPUContext, 1, (const char **)&source, 
+  theProgram = clCreateProgramWithSource(cxGPUContext, 1, (const char **)&source,
                                                     &kernelLength, &ciErrNum);
   printCLError(ciErrNum,5);
-    
+
   // build the program
   ciErrNum = clBuildProgram(theProgram, 0, NULL, NULL, NULL, NULL);
   if (ciErrNum != CL_SUCCESS)
   {
     // write out the build log, then exit
     char cBuildLog[10240];
-    clGetProgramBuildInfo(theProgram, device, CL_PROGRAM_BUILD_LOG, 
+    clGetProgramBuildInfo(theProgram, device, CL_PROGRAM_BUILD_LOG,
                           sizeof(cBuildLog), cBuildLog, NULL );
     printf("\nBuild Log:\n%s\n\n", (char *)&cBuildLog);
     return -1;
   }
-  
+
   theKernel = clCreateKernel(theProgram, "filter", &ciErrNum);
   printCLError(ciErrNum,6);
-  
+
   //Discard temp storage
   free(source);
-  
+
   return 0;
 }
 
@@ -122,7 +122,7 @@ void computeImages()
 	out = (unsigned char*) malloc(n*m*3);
 	cl_mem in_data, out_data;
 	cl_int ciErrNum = CL_SUCCESS;
-	
+
 	// Create space for data and copy image to device (note that we could also use clEnqueueWriteBuffer to upload)
 	in_data = clCreateBuffer(cxGPUContext, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
 		3*n*m * sizeof(unsigned char), image, &ciErrNum);
@@ -159,10 +159,10 @@ void computeImages()
 	printCLError(ciErrNum,11);
 	clWaitForEvents(1, &event); // Synch
 	printCLError(ciErrNum,10);
-    
+
 	clReleaseMemObject(in_data);
 	clReleaseMemObject(out_data);
-	
+
 	return;
 }
 
@@ -171,7 +171,7 @@ void computeImages()
 // Display images
 void Draw()
 {
-// Dump the whole picture onto the screen.	
+// Dump the whole picture onto the screen.
 	glClearColor( 0.0, 0.0, 0.0, 1.0 );
 	glClear( GL_COLOR_BUFFER_BIT );
 	glRasterPos2f(-1, -1);
@@ -182,7 +182,7 @@ void Draw()
 }
 
 // Main program, inits
-int main( int argc, char** argv) 
+int main( int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode( GLUT_SINGLE | GLUT_RGBA );
